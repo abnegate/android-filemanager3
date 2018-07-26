@@ -1,0 +1,10 @@
+ext {
+    dagger_version = '2.16'
+    glide_version = '4.7.1'
+    support_version = '27.1.1'
+    google_api_version = '1.22.0'
+    kotlin_version = '1.2.51'
+    rxkotlin_version = '2.2.0'
+    fabric_version = '2.9.4'
+    app_name = "filemanager"
+}
