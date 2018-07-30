@@ -7,6 +7,8 @@ import android.view.View
 import com.jakebarnby.filemanager3.core.BasePresenter
 import com.jakebarnby.filemanager3.core.BaseView
 import com.jakebarnby.filemanager3.sources.models.SourceFile
+import io.reactivex.Completable
+import io.reactivex.functions.Action
 
 class SourceContract {
 
@@ -27,6 +29,8 @@ class SourceContract {
     }
 
     interface Presenter : BasePresenter<View> {
+        fun checkPermissions()
+
         fun onViewAsClicked()
         fun onCreateFolderClicked()
         fun onCreateZipClicked()
@@ -54,8 +58,8 @@ class SourceContract {
     }
 
     interface FragmentPresenter : BasePresenter<FragmentView> {
-        fun onConnectClicked()
-        fun onFileClicked(file: SourceFile)
-        fun onBreadcrumbClicked(file: SourceFile)
+        fun connect(onComplete: ()->Unit)
+        fun openFile(file: SourceFile)
+        fun navigateToBreadcrumb(file: SourceFile)
     }
 }

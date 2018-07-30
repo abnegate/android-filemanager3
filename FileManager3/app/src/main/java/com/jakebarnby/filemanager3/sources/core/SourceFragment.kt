@@ -2,31 +2,28 @@ package com.jakebarnby.filemanager3.sources.core
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.HorizontalScrollView
-import com.fasterxml.jackson.core.TreeNode
 import com.jakebarnby.filemanager3.R
-import com.jakebarnby.filemanager3.SourceActivity
 import com.jakebarnby.filemanager3.sources.models.SourceFile
 import com.jakebarnby.filemanager3.util.toggleVisibility
-import dagger.android.support.DaggerFragment
 import kotlinx.android.synthetic.main.fragment_source.*
 import kotlinx.android.synthetic.main.fragment_source.view.*
 import kotlinx.android.synthetic.main.view_breadcrumb.view.*
-import javax.inject.Inject
 
-open class SourceFragment : DaggerFragment(), SourceContract.FragmentView {
+open class SourceFragment : Fragment(), SourceContract.FragmentView {
 
     lateinit var fragmentPresenter: FragmentPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_source, container, false)
         view.btn_connect.setOnClickListener {
-            fragmentPresenter.onConnectClicked()
+            fragmentPresenter.connect {
+                //TODO: Load data into view
+            }
         }
         return view
     }
@@ -50,7 +47,7 @@ open class SourceFragment : DaggerFragment(), SourceContract.FragmentView {
     }
 
     override fun createBreadcrumb(file: SourceFile): View {
-        val crumbLayout = activity!!.layoutInflater
+        val crumbLayout = layoutInflater
                 .inflate(R.layout.view_breadcrumb, null) as ViewGroup
 
         crumbLayout.crumb_arrow.visibility =
@@ -59,8 +56,7 @@ open class SourceFragment : DaggerFragment(), SourceContract.FragmentView {
                 else
                     View.VISIBLE
 
-        val text = crumbLayout.crumb_text
-        text.text =
+        crumbLayout.crumb_text.text =
                 if (file.parentId == 0)
                     file.sourceName
                 else
@@ -83,7 +79,7 @@ open class SourceFragment : DaggerFragment(), SourceContract.FragmentView {
 
     private fun breadcrumbClickListener(crumb: View): View.OnClickListener {
         return View.OnClickListener {
-//            val crumbText = it.crumb_text
+            //            val crumbText = it.crumb_text
 //
 //            val diff = breadcrumbs.childCount - 1 - breadcrumbs.indexOfChild(crumb)
 //            for (i in 0 until diff) popBreadcrumb()

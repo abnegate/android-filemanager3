@@ -1,12 +1,8 @@
 package com.jakebarnby.filemanager3
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
-import android.view.View
-import com.jakebarnby.filemanager3.di.ActivityScoped
 import com.jakebarnby.filemanager3.sources.core.SourceContract
 import com.jakebarnby.filemanager3.sources.core.SourcePagerAdapter
-import com.jakebarnby.filemanager3.sources.core.SourcePresenter
 import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -30,6 +26,7 @@ class SourceActivity : DaggerAppCompatActivity(), SourceContract.View {
     override fun onResume() {
         super.onResume()
         presenter.subscribe(this)
+        presenter.checkPermissions()
     }
 
     override fun onStop() {
@@ -106,7 +103,7 @@ class SourceActivity : DaggerAppCompatActivity(), SourceContract.View {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun showErrorWithActionSnackbar(error: String, listener: View.OnClickListener) {
+    override fun showErrorWithActionSnackbar(error: String, listener: () -> Unit) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 

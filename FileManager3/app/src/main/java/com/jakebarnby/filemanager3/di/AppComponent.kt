@@ -15,7 +15,6 @@ import javax.inject.Singleton
     AppModule::class,
     ActivityBindingModule::class,
     AndroidSupportInjectionModule::class,
-    SourceModule::class,
     DatabaseModule::class])
 interface AppComponent : AndroidInjector<FileManagerApplication> {
 

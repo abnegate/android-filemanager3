@@ -1,6 +1,6 @@
 package com.jakebarnby.filemanager3.data
 
-import android.content.Context
+import android.app.Application
 import com.jakebarnby.filemanager3.di.ActivityScoped
 import dagger.Module
 import dagger.Provides
@@ -10,7 +10,7 @@ class DatabaseModule {
 
     @Provides
     @ActivityScoped
-    fun provideFileDao(context: Context): FileDao {
-        return FileDatabase.getInstance(context).fileDao()
+    fun provideFileDao(application: Application): FileDao {
+        return FileDatabase.getInstance(application).fileDao()
     }
 }

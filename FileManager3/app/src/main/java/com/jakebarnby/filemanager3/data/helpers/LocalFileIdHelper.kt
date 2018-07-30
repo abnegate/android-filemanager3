@@ -2,9 +2,10 @@ package com.jakebarnby.filemanager3.data.helpers
 
 import io.reactivex.Single
 import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 import java.util.zip.CRC32
+
+import com.jakebarnby.filemanager3.util.getBytes
 
 class LocalFileIdHelper: FileIdHelper<File> {
 
@@ -23,31 +24,5 @@ class LocalFileIdHelper: FileIdHelper<File> {
                 it.onError(e)
             }
         }
-    }
-
-    @Throws(IOException::class)
-    private fun File.getBytes(): ByteArray {
-        val length = length()
-        if (length > Integer.MAX_VALUE) {
-            throw IOException("File is too large!")
-        }
-
-        val bytes = ByteArray(length.toInt())
-        var offset = 0
-        var numRead: Int
-
-        val inStream = FileInputStream(this)
-        inStream.use { stream ->
-            while (offset < bytes.size) {
-                numRead = stream.read(bytes, offset, bytes.size - offset)
-                if (numRead >= 0) {
-                    offset += numRead
-                }
-            }
-        }
-        if (offset < bytes.size) {
-            throw IOException("Could not completely read file $name")
-        }
-        return bytes
     }
 }

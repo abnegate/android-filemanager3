@@ -14,7 +14,6 @@ abstract class FileDatabase : RoomDatabase() {
     abstract fun fileDao(): FileDao
 
     companion object {
-
         @Volatile
         private var INSTANCE: FileDatabase? = null
 

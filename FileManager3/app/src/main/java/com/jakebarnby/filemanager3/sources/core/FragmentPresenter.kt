@@ -1,17 +1,16 @@
 package com.jakebarnby.filemanager3.sources.core
 
-import android.content.Context
+import android.support.v4.app.Fragment
 import com.jakebarnby.filemanager3.di.ActivityScoped
 import com.jakebarnby.filemanager3.sources.models.Source
 import com.jakebarnby.filemanager3.sources.models.SourceFile
 import io.reactivex.Flowable
 import io.reactivex.schedulers.Schedulers
-import javax.inject.Inject
 
 @ActivityScoped
-open class FragmentPresenter @Inject constructor(): SourceContract.FragmentPresenter {
+open class FragmentPresenter : SourceContract.FragmentPresenter {
 
-    lateinit var source: Source
+    protected lateinit var source: Source
 
     private var view: SourceContract.FragmentView? = null
 
@@ -23,21 +22,25 @@ open class FragmentPresenter @Inject constructor(): SourceContract.FragmentPrese
         view = null
     }
 
-    override fun onConnectClicked() {
-        val loginAndLoad = Flowable.concat(
-                source.authenticateSource(view as Context).toFlowable(),
-                source.loadSource(view as Context).toFlowable())
+    override fun connect(onComplete: () -> Unit) {
+        val context = (view as Fragment).context
+        context?.let {
+            val loginAndLoad = Flowable.concat(
+                    source.authenticateSource(it).toFlowable(),
+                    source.loadSource(it).toFlowable())
+                    .doOnComplete(onComplete)
 
-        source.disposables.add(loginAndLoad
-                .subscribeOn(Schedulers.io())
-                .subscribe())
+            source.disposables.add(loginAndLoad
+                    .subscribeOn(Schedulers.io())
+                    .subscribe())
+        }
     }
 
-    override fun onFileClicked(file: SourceFile) {
+    override fun openFile(file: SourceFile) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onBreadcrumbClicked(file: SourceFile) {
+    override fun navigateToBreadcrumb(file: SourceFile) {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

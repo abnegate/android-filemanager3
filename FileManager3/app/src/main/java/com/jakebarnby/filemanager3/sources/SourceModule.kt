@@ -11,12 +11,7 @@ import javax.inject.Singleton
 
 @Module
 abstract class SourceModule {
-
     @ActivityScoped
     @Binds
     internal abstract fun providePresenter(presenter: SourcePresenter): SourceContract.Presenter
-
-    @FragmentScoped
-    @Binds
-    internal abstract fun provideFragmentPresenter(fragmentPresenter: FragmentPresenter): SourceContract.FragmentPresenter
 }
