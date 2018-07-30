@@ -3,17 +3,20 @@ package com.jakebarnby.filemanager3.data
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
+import android.arch.persistence.room.TypeConverters
 import android.content.Context
 import com.jakebarnby.filemanager3.sources.models.SourceFile
 
-@Database(entities = arrayOf(SourceFile::class), version = 1)
+@Database(entities = [(SourceFile::class)], version = 1)
+@TypeConverters(RoomConverters::class)
 abstract class FileDatabase : RoomDatabase() {
 
     abstract fun fileDao(): FileDao
 
     companion object {
 
-        @Volatile private var INSTANCE: FileDatabase? = null
+        @Volatile
+        private var INSTANCE: FileDatabase? = null
 
         fun getInstance(context: Context): FileDatabase =
                 INSTANCE ?: synchronized(this) {

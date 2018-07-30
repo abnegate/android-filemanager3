@@ -3,19 +3,12 @@ package com.jakebarnby.filemanager3.sources.core
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
+import com.jakebarnby.filemanager3.sources.local.LocalFragment
 import com.jakebarnby.filemanager3.util.Constants
 
 class SourcePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
-    private val fragments: Array<Fragments>
-
-    init {
-        fragments = Fragments.values()
-    }
-
-    enum class Fragments(val title: String, val fragment: SourceFragment) {
-        Local(Constants.Sources.LOCAL, SourceFragment())
-    }
+    private val fragments: Array<Fragments> = Fragments.values()
 
     override fun getPageTitle(position: Int): CharSequence? {
         return fragments[position].title

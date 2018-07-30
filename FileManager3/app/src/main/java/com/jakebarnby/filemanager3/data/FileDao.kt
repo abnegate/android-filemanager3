@@ -18,14 +18,14 @@ interface FileDao {
      * @return the file from the table with a specific id.
      */
     @Query("SELECT * FROM files WHERE id = :id")
-    fun getFileById(id: String): Flowable<SourceFile>
+    fun getFileById(id: Int): Flowable<SourceFile>
 
     /**
      * Get a file by source and id.
      * @return the file from the table with a specific id.
      */
     @Query("SELECT * FROM files WHERE sourceName = :sourceName AND id = :id")
-    fun getFileByIdAndSource(id: String, sourceName: String): Flowable<SourceFile>
+    fun getFileByIdAndSource(id: Int, sourceName: String): Flowable<SourceFile>
 
     /**
      *
@@ -43,7 +43,7 @@ interface FileDao {
      * Insert a file in the database. If the file already exists, ignore it.
      * @param user the user to be inserted.
      */
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertFile(file: SourceFile)
 
     /**

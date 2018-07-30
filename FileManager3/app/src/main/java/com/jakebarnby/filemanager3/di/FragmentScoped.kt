@@ -2,7 +2,7 @@ package com.jakebarnby.filemanager3.di
 
 import javax.inject.Scope
 
-@MustBeDocumented
 @Scope
 @Retention(AnnotationRetention.RUNTIME)
-annotation class ActivityScoped
+@Target(AnnotationTarget.TYPE, AnnotationTarget.FUNCTION)
+annotation class FragmentScoped

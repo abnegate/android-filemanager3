@@ -1,21 +1,31 @@
 package com.jakebarnby.filemanager3.sources.models
 
-import android.arch.persistence.room.ColumnInfo
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey
+import com.jakebarnby.filemanager3.data.helpers.LocalFileIdHelper
 import com.jakebarnby.filemanager3.util.Constants.Sources.LOCAL
+import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.Serializable
-import java.util.*
 
 /**
  * Created by Jake on 6/5/2017.
  */
 
 @Entity(tableName = "files")
-class SourceFile : Serializable {
+class SourceFile() : Serializable {
 
-    constructor(file: File, fileParentId: Int) {
+    constructor(file: File, fileParentId: Int) : this() {
+        LocalFileIdHelper()
+                .getId(file)
+                .subscribeOn(Schedulers.io())
+                .doOnError {
+                    //TODO: Error handling
+                }
+                .subscribe { fileId ->
+                    id = fileId
+                }
+
         parentId = fileParentId
         path = file.absolutePath
         name = file.name
@@ -29,7 +39,7 @@ class SourceFile : Serializable {
     }
 
     @PrimaryKey
-    val id: Int = Random().nextInt(Int.MAX_VALUE)
+    var id: Long = 0
     var parentId: Int = 0
     var path: String? = null
     var name: String? = null

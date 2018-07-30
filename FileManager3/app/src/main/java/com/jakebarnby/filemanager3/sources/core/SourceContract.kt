@@ -2,6 +2,7 @@ package com.jakebarnby.filemanager3.sources.core
 
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.SearchView
+import android.view.View
 
 import com.jakebarnby.filemanager3.core.BasePresenter
 import com.jakebarnby.filemanager3.core.BaseView
@@ -44,17 +45,12 @@ class SourceContract {
         fun addLocalSources()
     }
 
-    interface Interactor {
-        fun doSomething()
-    }
-
     interface FragmentView {
-        fun showLoading()
-        fun toggleConnectButton(enabled: Boolean)
-        fun pushBreadcrumb(file: SourceFile)
+        fun toggleLoading()
+        fun toggleConnectButton()
+        fun createBreadcrumb(file: SourceFile): android.view.View
+        fun pushBreadcrumb(crumb: android.view.View)
         fun popBreadcrumb()
-
-
     }
 
     interface FragmentPresenter : BasePresenter<FragmentView> {

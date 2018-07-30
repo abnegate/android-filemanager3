@@ -1,6 +1,21 @@
 package com.jakebarnby.filemanager3.sources.core
 
-class SourcePresenter : SourceContract.Presenter {
+import com.jakebarnby.filemanager3.di.ActivityScoped
+import javax.inject.Inject
+
+@ActivityScoped
+class SourcePresenter @Inject constructor() : SourceContract.Presenter {
+
+    private var view: SourceContract.View? = null
+
+    override fun subscribe(view: SourceContract.View) {
+        this.view = view
+    }
+
+    override fun unsubscribe() {
+        this.view = null
+    }
+
     override fun onViewAsClicked() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -56,15 +71,4 @@ class SourcePresenter : SourceContract.Presenter {
     override fun addLocalSources() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
-    private var view: SourceContract.View? = null
-
-    override fun subscribe(view: SourceContract.View) {
-        this.view = view
-    }
-
-    override fun unsubscribe() {
-        this.view = null
-    }
-
 }

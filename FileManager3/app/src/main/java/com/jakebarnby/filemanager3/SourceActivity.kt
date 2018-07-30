@@ -1,18 +1,20 @@
 package com.jakebarnby.filemanager3
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatActivity
 import android.view.View
+import com.jakebarnby.filemanager3.di.ActivityScoped
 import com.jakebarnby.filemanager3.sources.core.SourceContract
 import com.jakebarnby.filemanager3.sources.core.SourcePagerAdapter
 import com.jakebarnby.filemanager3.sources.core.SourcePresenter
+import dagger.android.support.DaggerAppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
-class MainActivity : AppCompatActivity(), SourceContract.View {
+class SourceActivity : DaggerAppCompatActivity(), SourceContract.View {
 
-    @Inject lateinit var presenter: SourcePresenter
+    @Inject
+    lateinit var presenter: SourceContract.Presenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,7 +22,7 @@ class MainActivity : AppCompatActivity(), SourceContract.View {
         setSupportActionBar(toolbar)
 
         view_pager.adapter = SourcePagerAdapter(supportFragmentManager)
-        view_pager.offscreenPageLimit = (view_pager.adapter as SourcePagerAdapter).count
+        view_pager.offscreenPageLimit = (view_pager.adapter as SourcePagerAdapter).count - 1
 
         tabs.setupWithViewPager(view_pager)
     }
