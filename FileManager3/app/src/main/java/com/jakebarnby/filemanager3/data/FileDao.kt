@@ -6,7 +6,6 @@ import android.arch.persistence.room.OnConflictStrategy
 import android.arch.persistence.room.Query
 import com.jakebarnby.filemanager3.sources.models.SourceFile
 import io.reactivex.Flowable
-import javax.inject.Inject
 
 /**
  * Data Access Object for the users table.

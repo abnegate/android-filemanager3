@@ -20,25 +20,25 @@ class SourcePresenter @Inject constructor() : SourceContract.Presenter {
 
     override fun checkPermissions() {
         (view as Activity)
-                .askPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) {
-                    onGranted {
+            .askPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+                onGranted {
 
-                    }
+                }
 
-                    onDenied {
+                onDenied {
 
-                    }
+                }
 
-                    onShowRationale {
-                        view?.showErrorDialog()
-                    }
+                onShowRationale {
+                    view?.showErrorDialog()
+                }
 
-                    onNeverAskAgain {
-                        view?.showErrorWithActionSnackbar("Never ask again.") {
-                            //TODO: Open settings
-                        }
+                onNeverAskAgain {
+                    view?.showErrorWithActionSnackbar("Never ask again.") {
+                        //TODO: Open settings
                     }
                 }
+            }
     }
 
     override fun onViewAsClicked() {

@@ -3,8 +3,6 @@ package com.jakebarnby.filemanager3.sources.core
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
-import com.jakebarnby.filemanager3.sources.local.LocalFragment
-import com.jakebarnby.filemanager3.util.Constants
 
 class SourcePagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 

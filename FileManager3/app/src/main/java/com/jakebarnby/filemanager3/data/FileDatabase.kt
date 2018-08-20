@@ -18,13 +18,13 @@ abstract class FileDatabase : RoomDatabase() {
         private var INSTANCE: FileDatabase? = null
 
         fun getInstance(context: Context): FileDatabase =
-                INSTANCE ?: synchronized(this) {
-                    INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
-                }
+            INSTANCE ?: synchronized(this) {
+                INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
+            }
 
         private fun buildDatabase(context: Context) =
-                Room.databaseBuilder(context.applicationContext,
-                        FileDatabase::class.java, "filemanager.db")
-                        .build()
+            Room.databaseBuilder(context.applicationContext,
+                FileDatabase::class.java, "filemanager.db")
+                .build()
     }
 }

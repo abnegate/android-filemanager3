@@ -2,7 +2,9 @@ package com.jakebarnby.filemanager3.sources.models
 
 import android.content.Context
 import com.jakebarnby.filemanager3.data.FileDao
+import com.jakebarnby.filemanager3.data.FileDatabase
 import io.reactivex.Completable
+import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
@@ -13,7 +15,6 @@ import javax.inject.Inject
 
 abstract class Source(val sourceType: SourceType, val sourceName: String) {
 
-    @Inject
     lateinit var fileDao: FileDao
 
     var rootFileId = 0
@@ -23,13 +24,17 @@ abstract class Source(val sourceType: SourceType, val sourceName: String) {
     var isMultiSelectEnabled = false
     val disposables = CompositeDisposable()
 
-    abstract fun authenticateSource(context: Context): Single<Any>
-    abstract fun loadSource(context: Context): Completable
-    abstract fun logout(context: Context): Completable
-    abstract fun getStorageStats(): Single<StorageStats>
+    abstract fun authenticateSource(context: Context): Flowable<Any>
+    abstract fun loadSource(context: Context): Flowable<Any>
+    abstract fun logout(context: Context): Flowable<Any>
+    abstract fun getStorageStats(): Flowable<StorageStats>
 
     fun dispose() {
         disposables.dispose()
+    }
+
+    fun setFileSource(context: Context) {
+        fileDao = FileDatabase.getInstance(context).fileDao()
     }
 }
 

@@ -2,13 +2,9 @@ package com.jakebarnby.filemanager3.sources.core
 
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.SearchView
-import android.view.View
-
 import com.jakebarnby.filemanager3.core.BasePresenter
 import com.jakebarnby.filemanager3.core.BaseView
 import com.jakebarnby.filemanager3.sources.models.SourceFile
-import io.reactivex.Completable
-import io.reactivex.functions.Action
 
 class SourceContract {
 
@@ -58,8 +54,12 @@ class SourceContract {
     }
 
     interface FragmentPresenter : BasePresenter<FragmentView> {
-        fun connect(onComplete: ()->Unit)
+        fun connect(onComplete: ConnectListener)
         fun openFile(file: SourceFile)
         fun navigateToBreadcrumb(file: SourceFile)
     }
+
+    interface SourceFilePresenter
 }
+
+typealias ConnectListener = () -> Unit

@@ -17,14 +17,14 @@ class SourceFile() : Serializable {
 
     constructor(file: File, fileParentId: Int) : this() {
         LocalFileIdHelper()
-                .getId(file)
-                .subscribeOn(Schedulers.io())
-                .doOnError {
-                    //TODO: Error handling
-                }
-                .subscribe { fileId ->
-                    id = fileId
-                }
+            .getId(file)
+            .subscribeOn(Schedulers.io())
+            .doOnError {
+                //TODO: Error handling
+            }
+            .subscribe { fileId ->
+                id = fileId
+            }
 
         parentId = fileParentId
         path = file.absolutePath

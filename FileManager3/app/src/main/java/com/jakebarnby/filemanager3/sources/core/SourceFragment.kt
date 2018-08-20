@@ -2,6 +2,7 @@ package com.jakebarnby.filemanager3.sources.core
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,7 +17,7 @@ import kotlinx.android.synthetic.main.view_breadcrumb.view.*
 
 open class SourceFragment : Fragment(), SourceContract.FragmentView {
 
-    lateinit var fragmentPresenter: FragmentPresenter
+    lateinit var fragmentPresenter: SourceFragmentPresenter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_source, container, false)
@@ -34,8 +35,8 @@ open class SourceFragment : Fragment(), SourceContract.FragmentView {
     }
 
     override fun onStop() {
-        super.onStop()
         fragmentPresenter.unsubscribe()
+        super.onStop()
     }
 
     override fun toggleLoading() {
@@ -48,19 +49,19 @@ open class SourceFragment : Fragment(), SourceContract.FragmentView {
 
     override fun createBreadcrumb(file: SourceFile): View {
         val crumbLayout = layoutInflater
-                .inflate(R.layout.view_breadcrumb, null) as ViewGroup
+            .inflate(R.layout.view_breadcrumb, null) as ViewGroup
 
         crumbLayout.crumb_arrow.visibility =
-                if (file.parentId == 0)
-                    View.GONE
-                else
-                    View.VISIBLE
+            if (file.parentId == 0)
+                View.GONE
+            else
+                View.VISIBLE
 
         crumbLayout.crumb_text.text =
-                if (file.parentId == 0)
-                    file.sourceName
-                else
-                    file.name
+            if (file.parentId == 0)
+                file.sourceName
+            else
+                file.name
 
         crumbLayout.setOnClickListener(breadcrumbClickListener(crumbLayout))
         return crumbLayout
@@ -68,7 +69,7 @@ open class SourceFragment : Fragment(), SourceContract.FragmentView {
 
     override fun pushBreadcrumb(crumb: View) {
         breadcrumb_scroll.postDelayed({ breadcrumb_scroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT) },
-                50L)
+            50L)
         breadcrumbs.addView(view)
         crumb.startAnimation(AnimationUtils.loadAnimation(context, R.anim.breadcrumb_overshoot_z))
     }
