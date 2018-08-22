@@ -2,13 +2,15 @@ package com.jakebarnby.filemanager3.sources.core
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
-import android.widget.HorizontalScrollView
 import com.jakebarnby.filemanager3.R
+import com.jakebarnby.filemanager3.adapters.FileAdapter
+import com.jakebarnby.filemanager3.adapters.FileListAdapter
 import com.jakebarnby.filemanager3.sources.models.SourceFile
 import com.jakebarnby.filemanager3.util.toggleVisibility
 import kotlinx.android.synthetic.main.fragment_source.*
@@ -17,15 +19,21 @@ import kotlinx.android.synthetic.main.view_breadcrumb.view.*
 
 open class SourceFragment : Fragment(), SourceContract.FragmentView {
 
-    lateinit var fragmentPresenter: SourceFragmentPresenter
+    protected lateinit var fragmentPresenter: SourceContract.FragmentPresenter
+    protected lateinit var filePresenter: SourceContract.FilePresenter
+
+    private lateinit var filesRecycler: RecyclerView
+    private lateinit var adapter: FileAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater.inflate(R.layout.fragment_source, container, false)
         view.btn_connect.setOnClickListener {
             fragmentPresenter.connect {
-                //TODO: Load data into view
+                initViews()
+                showRootFolder()
             }
         }
+        filesRecycler = view.findViewById(R.id.recycler_files)
         return view
     }
 
@@ -39,6 +47,31 @@ open class SourceFragment : Fragment(), SourceContract.FragmentView {
         super.onStop()
     }
 
+    override fun initViews() {
+        adapter = FileListAdapter(filePresenter)
+        filesRecycler.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
+        filesRecycler.adapter = adapter
+    }
+
+    override fun showRootFolder() {
+        fragmentPresenter.loadRootFolder(
+            onNext = {
+                filePresenter.setCurrentDirectory(it)
+                activity?.runOnUiThread {
+                    toggleLogo()
+                    adapter.notifyDataSetChanged()
+                }
+            },
+            onError = {
+                it.printStackTrace()
+            },
+            onComplete = {
+                adapter.notifyDataSetChanged()
+                Log.e("JAKE", "Database probably died")
+            })
+    }
+
     override fun toggleLoading() {
         pgb_loading.toggleVisibility()
     }
@@ -47,31 +80,33 @@ open class SourceFragment : Fragment(), SourceContract.FragmentView {
         btn_connect.toggleVisibility()
     }
 
+    override fun toggleLogo() {
+        img_source_logo.toggleVisibility()
+    }
+
     override fun createBreadcrumb(file: SourceFile): View {
         val crumbLayout = layoutInflater
-            .inflate(R.layout.view_breadcrumb, null) as ViewGroup
+            .inflate(R.layout.view_breadcrumb, null, false) as ViewGroup
 
-        crumbLayout.crumb_arrow.visibility =
-            if (file.parentId == 0)
-                View.GONE
-            else
-                View.VISIBLE
+        crumbLayout.crumb_arrow.visibility = if (file.parentId == 0L)
+            View.GONE
+        else
+            View.VISIBLE
 
-        crumbLayout.crumb_text.text =
-            if (file.parentId == 0)
-                file.sourceName
-            else
-                file.name
+        crumbLayout.crumb_text.text = if (file.parentId == 0L)
+            file.sourceName
+        else
+            file.name
 
         crumbLayout.setOnClickListener(breadcrumbClickListener(crumbLayout))
         return crumbLayout
     }
 
     override fun pushBreadcrumb(crumb: View) {
-        breadcrumb_scroll.postDelayed({ breadcrumb_scroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT) },
-            50L)
-        breadcrumbs.addView(view)
-        crumb.startAnimation(AnimationUtils.loadAnimation(context, R.anim.breadcrumb_overshoot_z))
+//        breadcrumb_scroll.postDelayed({ breadcrumb_scroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT) },
+//            50L)
+//        breadcrumbs.addView(view)
+//        crumb.startAnimation(AnimationUtils.loadAnimation(context, R.anim.breadcrumb_overshoot_z))
     }
 
     override fun popBreadcrumb() {

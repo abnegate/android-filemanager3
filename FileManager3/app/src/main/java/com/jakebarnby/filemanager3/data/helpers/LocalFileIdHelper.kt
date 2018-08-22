@@ -8,7 +8,7 @@ import java.util.zip.CRC32
 
 class LocalFileIdHelper : IdHelper<File> {
 
-    companion object {
+    private companion object {
         val crc32 = CRC32()
     }
 

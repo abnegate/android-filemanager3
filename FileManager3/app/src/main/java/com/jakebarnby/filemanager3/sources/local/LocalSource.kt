@@ -4,16 +4,13 @@ import android.content.Context
 import android.os.Environment
 import android.os.StatFs
 import android.util.Log
-import com.jakebarnby.filemanager3.data.FileDatabase
 import com.jakebarnby.filemanager3.sources.models.Source
 import com.jakebarnby.filemanager3.sources.models.SourceFile
 import com.jakebarnby.filemanager3.sources.models.SourceType
 import com.jakebarnby.filemanager3.sources.models.StorageStats
 import com.jakebarnby.filemanager3.util.Constants.Sources.LOCAL
 import io.reactivex.BackpressureStrategy
-import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
@@ -22,33 +19,33 @@ import java.util.*
 class LocalSource : Source(SourceType.LOCAL, LOCAL) {
 
     override fun authenticateSource(context: Context): Flowable<Any> =
-        Flowable.create ({
+        Flowable.create({
             it.onComplete()
         }, BackpressureStrategy.BUFFER)
 
     override fun loadSource(context: Context): Flowable<Any> {
-        return Flowable.create ({
+        return Flowable.create({
             val root = Environment.getExternalStorageDirectory()
             val queue = LinkedList<File>()
-            queue.offer(root)
+            val fileList = mutableListOf<SourceFile>()
 
-            var parentId = 0
-            var iterCount = 0
+            var parentId = rootFileId
+            var fileCounter = 0
             var setNewIdIn = Int.MAX_VALUE
 
-            rootFileId = parentId
+            queue.offer(root)
 
             while (!queue.isEmpty()) {
                 val file = queue.poll()
 
-                if (iterCount == setNewIdIn) {
-                    parentId = file.hashCode()
+                if (fileCounter == setNewIdIn) {
+                    parentId = file.hashCode().toLong()
                     setNewIdIn = Int.MAX_VALUE
                 }
 
                 val sourceFile = SourceFile(file, parentId)
-
-                fileDao.insertFile(sourceFile)
+                fileList.add(sourceFile)
+                it.onNext(sourceFile)
 
                 Log.d("File inserted", file.absolutePath)
 
@@ -57,20 +54,22 @@ class LocalSource : Source(SourceType.LOCAL, LOCAL) {
                     file.listFiles().forEach { queue.offer(it) }
                     val newLength = queue.size
                     setNewIdIn = newLength - initialLength
-                    iterCount = -1
+                    fileCounter = -1
                 }
-                iterCount++
+                fileCounter++
             }
+            fileDao.insertFiles(fileList)
+            it.onComplete()
         }, BackpressureStrategy.BUFFER)
     }
 
     override fun logout(context: Context): Flowable<Any> =
-        Flowable.create ({
+        Flowable.create({
             it.onComplete()
         }, BackpressureStrategy.BUFFER)
 
     override fun getStorageStats(): Flowable<StorageStats> {
-        return Flowable.create ({ emitter ->
+        return Flowable.create({ emitter ->
             if (storageStats == null) {
                 val stats = StorageStats()
                 disposables.add(

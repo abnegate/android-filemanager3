@@ -36,7 +36,7 @@ class SourceContract {
         fun onSettingsClicked()
 
         fun onCopyClicked()
-        fun onPaseClicked()
+        fun onPasteClicked()
         fun onDeleteClicked()
         fun onSearchClcked()
         fun onOpenClicked()
@@ -46,8 +46,11 @@ class SourceContract {
     }
 
     interface FragmentView {
+        fun initViews()
+        fun showRootFolder()
         fun toggleLoading()
         fun toggleConnectButton()
+        fun toggleLogo()
         fun createBreadcrumb(file: SourceFile): android.view.View
         fun pushBreadcrumb(crumb: android.view.View)
         fun popBreadcrumb()
@@ -57,9 +60,23 @@ class SourceContract {
         fun connect(onComplete: ConnectListener)
         fun openFile(file: SourceFile)
         fun navigateToBreadcrumb(file: SourceFile)
+        fun loadRootFolder(onNext: (files: List<SourceFile>) -> Unit,
+                           onError: (error: Throwable) -> Unit,
+                           onComplete: () -> Unit)
     }
 
-    interface SourceFilePresenter
+    interface FileRowView {
+        fun setPreviewImage(path: String)
+        fun setFilename(name: String)
+        fun setSelected(selected: Boolean)
+    }
+
+    interface FilePresenter {
+        fun onItemSelected(position: Int)
+        fun getFileCount(): Int
+        fun setCurrentDirectory(fileList: List<SourceFile>)
+        fun bindViewForPoistion(position: Int, fileRowView: FileRowView)
+    }
 }
 
 typealias ConnectListener = () -> Unit

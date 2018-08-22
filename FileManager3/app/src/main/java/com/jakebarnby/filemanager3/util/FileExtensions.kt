@@ -1,5 +1,7 @@
 package com.jakebarnby.filemanager3.util
 
+import android.webkit.MimeTypeMap
+import com.jakebarnby.filemanager3.util.Constants.MIME_LIST
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
@@ -32,4 +34,17 @@ fun File.getBytes(): ByteArray {
     } else {
         return ByteArray(0)
     }
+}
+
+fun File.isMediaFile(): Boolean {
+    if (isDirectory || extension.isEmpty()) return false
+
+    val type: String? = MimeTypeMap
+        .getSingleton()
+        .getMimeTypeFromExtension(extension)
+
+    type?.let {
+        return MIME_LIST.contains(it)
+    }
+    return false
 }
