@@ -1,6 +1,46 @@
 package com.jakebarnby.filemanager3.sources.core
 
-class SourcePresenter : SourceContract.Presenter {
+import android.app.Activity
+import com.jakebarnby.filemanager3.di.ActivityScoped
+import com.sembozdemir.permissionskt.askPermissions
+import javax.inject.Inject
+
+@ActivityScoped
+class SourcePresenter @Inject constructor() : SourceContract.Presenter {
+
+    private var view: SourceContract.View? = null
+
+    override fun subscribe(view: SourceContract.View) {
+        this.view = view
+    }
+
+    override fun unsubscribe() {
+        this.view = null
+    }
+
+    override fun checkPermissions() {
+        (view as Activity)
+            .askPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+                onGranted {
+
+                }
+
+                onDenied {
+
+                }
+
+                onShowRationale {
+                    view?.showErrorDialog()
+                }
+
+                onNeverAskAgain {
+                    view?.showErrorWithActionSnackbar("Never ask again.") {
+                        //TODO: Open settings
+                    }
+                }
+            }
+    }
+
     override fun onViewAsClicked() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -33,7 +73,7 @@ class SourcePresenter : SourceContract.Presenter {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
-    override fun onPaseClicked() {
+    override fun onPasteClicked() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
@@ -56,15 +96,4 @@ class SourcePresenter : SourceContract.Presenter {
     override fun addLocalSources() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
-
-    private var view: SourceContract.View? = null
-
-    override fun subscribe(view: SourceContract.View) {
-        this.view = view
-    }
-
-    override fun unsubscribe() {
-        this.view = null
-    }
-
 }

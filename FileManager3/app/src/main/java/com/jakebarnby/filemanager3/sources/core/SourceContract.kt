@@ -1,10 +1,11 @@
 package com.jakebarnby.filemanager3.sources.core
 
+import android.content.Context
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.SearchView
-
 import com.jakebarnby.filemanager3.core.BasePresenter
 import com.jakebarnby.filemanager3.core.BaseView
+import com.jakebarnby.filemanager3.sources.models.Source
 import com.jakebarnby.filemanager3.sources.models.SourceFile
 
 class SourceContract {
@@ -26,6 +27,8 @@ class SourceContract {
     }
 
     interface Presenter : BasePresenter<View> {
+        fun checkPermissions()
+
         fun onViewAsClicked()
         fun onCreateFolderClicked()
         fun onCreateZipClicked()
@@ -35,7 +38,7 @@ class SourceContract {
         fun onSettingsClicked()
 
         fun onCopyClicked()
-        fun onPaseClicked()
+        fun onPasteClicked()
         fun onDeleteClicked()
         fun onSearchClcked()
         fun onOpenClicked()
@@ -44,22 +47,42 @@ class SourceContract {
         fun addLocalSources()
     }
 
-    interface Interactor {
-        fun doSomething()
-    }
-
-    interface FragmentView {
-        fun showLoading()
-        fun toggleConnectButton(enabled: Boolean)
-        fun pushBreadcrumb(file: SourceFile)
+    interface FragmentView : BaseView<FragmentPresenter> {
+        fun initViews()
+        fun showRootFolder()
+        fun toggleLoading()
+        fun toggleConnectButton()
+        fun toggleLogo()
+        fun createBreadcrumb(file: SourceFile): android.view.View
+        fun pushBreadcrumb(crumb: android.view.View)
         fun popBreadcrumb()
-
-
     }
 
     interface FragmentPresenter : BasePresenter<FragmentView> {
-        fun onConnectClicked()
-        fun onFileClicked(file: SourceFile)
-        fun onBreadcrumbClicked(file: SourceFile)
+
+
+        fun connect(onComplete: ConnectListener)
+        fun onFileSelected(file: SourceFile, context: Context?)
+        fun openFile(file: SourceFile, context: Context?)
+        fun getSourceObj(): Source
+        fun navigateToBreadcrumb(file: SourceFile)
+        fun loadRootFolder(onNext: (files: List<SourceFile>) -> Unit,
+                           onError: (error: Throwable) -> Unit,
+                           onComplete: () -> Unit)
+    }
+
+    interface FileRowView {
+        fun setPreviewImage(path: String)
+        fun setFilename(name: String)
+        fun setSelected(selected: Boolean)
+    }
+
+    interface FilePresenter {
+        fun onItemSelected(position: Int, context: Context?)
+        fun getFileCount(): Int
+        fun setCurrentDirectory(fileList: List<SourceFile>)
+        fun bindViewForPosition(position: Int, fileRowView: FileRowView)
     }
 }
+
+typealias ConnectListener = () -> Unit

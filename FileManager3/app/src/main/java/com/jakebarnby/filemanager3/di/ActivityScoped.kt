@@ -2,7 +2,7 @@ package com.jakebarnby.filemanager3.di
 
 import javax.inject.Scope
 
-@MustBeDocumented
 @Scope
-@kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
+@Retention(AnnotationRetention.RUNTIME)
+@MustBeDocumented
 annotation class ActivityScoped
