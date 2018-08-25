@@ -36,14 +36,19 @@ fun File.getBytes(): ByteArray {
     }
 }
 
-fun File.isMediaFile(): Boolean {
+fun File.getMimeType(): String? {
+    if (extension.isNotEmpty()) {
+        return MimeTypeMap
+            .getSingleton()
+            .getMimeTypeFromExtension(extension)
+    }
+    return null
+}
+
+fun File.isMediaFile(mimeType: String?): Boolean {
     if (isDirectory || extension.isEmpty()) return false
 
-    val type: String? = MimeTypeMap
-        .getSingleton()
-        .getMimeTypeFromExtension(extension)
-
-    type?.let {
+    mimeType?.let {
         return MIME_LIST.contains(it)
     }
     return false

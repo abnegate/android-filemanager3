@@ -18,7 +18,7 @@ abstract class FileAdapter(protected val filePresenter: SourceContract.FilePrese
     }
 
     override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
-        filePresenter.bindViewForPoistion(position, holder)
+        filePresenter.bindViewForPosition(position, holder)
     }
 
     open class FileViewHolder(view: View?,
@@ -61,7 +61,7 @@ abstract class FileAdapter(protected val filePresenter: SourceContract.FilePrese
         }
 
         override fun onClick(view: View?) {
-            filePresenter.onItemSelected(adapterPosition)
+            filePresenter.onItemSelected(adapterPosition, view?.context)
         }
     }
 }

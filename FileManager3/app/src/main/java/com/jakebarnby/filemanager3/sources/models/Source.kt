@@ -21,7 +21,7 @@ abstract class Source(val sourceType: SourceType, val sourceName: String) {
     var isMultiSelectEnabled = false
     val disposables = CompositeDisposable()
 
-    var currentFileId = 0
+    var currentFolderParentId = 0L
 
     abstract fun authenticateSource(context: Context): Flowable<Any>
     abstract fun loadSource(context: Context): Flowable<Any>

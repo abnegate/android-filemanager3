@@ -19,8 +19,8 @@ import kotlinx.android.synthetic.main.view_breadcrumb.view.*
 
 open class SourceFragment : Fragment(), SourceContract.FragmentView {
 
-    protected lateinit var fragmentPresenter: SourceContract.FragmentPresenter
-    protected lateinit var filePresenter: SourceContract.FilePresenter
+    lateinit var fragmentPresenter: SourceContract.FragmentPresenter
+    lateinit var filePresenter: SourceContract.FilePresenter
 
     private lateinit var filesRecycler: RecyclerView
     private lateinit var adapter: FileAdapter
@@ -56,20 +56,19 @@ open class SourceFragment : Fragment(), SourceContract.FragmentView {
 
     override fun showRootFolder() {
         fragmentPresenter.loadRootFolder(
-            onNext = {
+            {
                 filePresenter.setCurrentDirectory(it)
                 activity?.runOnUiThread {
-                    toggleLogo()
+                    when (img_source_logo.visibility) {
+                        View.VISIBLE -> toggleLogo()
+                    }
                     adapter.notifyDataSetChanged()
                 }
-            },
-            onError = {
-                it.printStackTrace()
-            },
-            onComplete = {
-                adapter.notifyDataSetChanged()
-                Log.e("JAKE", "Database probably died")
-            })
+            }, {
+            it.printStackTrace()
+        }, {
+            adapter.notifyDataSetChanged()
+        })
     }
 
     override fun toggleLoading() {
@@ -135,4 +134,18 @@ open class SourceFragment : Fragment(), SourceContract.FragmentView {
 //            recycler_files.getAdapter().notifyDataSetChanged()
         }
     }
+
+    override fun showErrorSnackbar(error: String) {
+        Log.e("ERROR", error)
+    }
+
+    override fun showMessageSnackbar(message: String) {
+        TODO("not implemented")
+    }
+
+    override fun showErrorWithActionSnackbar(error: String, listener: () -> Unit) {
+        TODO("not implemented")
+    }
+
+
 }

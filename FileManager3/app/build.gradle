@@ -19,6 +19,12 @@ android {
                 cppFlags "-std=c++14"
             }
         }
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation":
+                                     "$projectDir/schemas".toString()]
+            }
+        }
     }
     buildTypes {
         release {
@@ -37,7 +43,7 @@ dependencies {
     implementation project(":permissionskt")
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.multidex:multidex:2.0.0'
     implementation "com.android.support:appcompat-v7:$support_version"
     implementation "com.android.support:design:$support_version"
@@ -62,13 +68,12 @@ dependencies {
     kapt "com.google.dagger:dagger-android-processor:$dagger_version"
     compileOnly 'org.glassfish:javax.annotation:10.0-b28'
 
-
     // Firebase
     implementation "com.google.android.gms:play-services-auth:16.0.0"
     implementation "com.google.firebase:firebase-core:16.0.1"
     implementation "com.google.firebase:firebase-messaging:17.3.0"
     implementation "com.google.firebase:firebase-config:16.0.0"
-    implementation ("com.google.android.gms:play-services-ads:15.0.1") {
+    implementation("com.google.android.gms:play-services-ads:15.0.1") {
         exclude group: 'com.android.support', module: 'customtabs'
     }
 

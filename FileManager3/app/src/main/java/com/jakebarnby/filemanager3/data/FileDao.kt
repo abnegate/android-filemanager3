@@ -9,7 +9,7 @@ import io.reactivex.Flowable
 import io.reactivex.Maybe
 
 /**
- * Data Access Object for the users table.
+ * Data Access Object for the files table.
  */
 @Dao
 interface FileDao {
@@ -51,7 +51,7 @@ interface FileDao {
     fun insertFile(file: SourceFile)
 
     /**
-     * Insert a file in the database. If the file already exists, ignore it.
+     * Insert a collection of files into the database. If a file already exists, ignore it.
      * @param user the user to be inserted.
      */
     @Insert(onConflict = OnConflictStrategy.REPLACE)

@@ -3,7 +3,6 @@ package com.jakebarnby.filemanager3.sources.local
 import android.content.Context
 import android.os.Environment
 import android.os.StatFs
-import android.util.Log
 import com.jakebarnby.filemanager3.sources.models.Source
 import com.jakebarnby.filemanager3.sources.models.SourceFile
 import com.jakebarnby.filemanager3.sources.models.SourceType
@@ -29,34 +28,29 @@ class LocalSource : Source(SourceType.LOCAL, LOCAL) {
             val queue = LinkedList<File>()
             val fileList = mutableListOf<SourceFile>()
 
-            var parentId = rootFileId
-            var fileCounter = 0
-            var setNewIdIn = Int.MAX_VALUE
+            var parentId = 0L
 
             queue.offer(root)
 
             while (!queue.isEmpty()) {
                 val file = queue.poll()
 
-                if (fileCounter == setNewIdIn) {
-                    parentId = file.hashCode().toLong()
-                    setNewIdIn = Int.MAX_VALUE
+                file.parentFile?.let {
+                    parentId = it.hashCode().toLong()
                 }
 
                 val sourceFile = SourceFile(file, parentId)
+
+                if (fileList.size == 0) {
+                    rootFileId = sourceFile.id
+                }
+
                 fileList.add(sourceFile)
                 it.onNext(sourceFile)
 
-                Log.d("File inserted", file.absolutePath)
-
                 if (file.isDirectory) {
-                    val initialLength = queue.size
                     file.listFiles().forEach { queue.offer(it) }
-                    val newLength = queue.size
-                    setNewIdIn = newLength - initialLength
-                    fileCounter = -1
                 }
-                fileCounter++
             }
             fileDao.insertFiles(fileList)
             it.onComplete()

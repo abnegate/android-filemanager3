@@ -1,9 +1,11 @@
 package com.jakebarnby.filemanager3.sources.core
 
+import android.content.Context
 import android.support.v4.view.ViewPager
 import android.support.v7.widget.SearchView
 import com.jakebarnby.filemanager3.core.BasePresenter
 import com.jakebarnby.filemanager3.core.BaseView
+import com.jakebarnby.filemanager3.sources.models.Source
 import com.jakebarnby.filemanager3.sources.models.SourceFile
 
 class SourceContract {
@@ -45,7 +47,7 @@ class SourceContract {
         fun addLocalSources()
     }
 
-    interface FragmentView {
+    interface FragmentView : BaseView<FragmentPresenter> {
         fun initViews()
         fun showRootFolder()
         fun toggleLoading()
@@ -57,8 +59,12 @@ class SourceContract {
     }
 
     interface FragmentPresenter : BasePresenter<FragmentView> {
+
+
         fun connect(onComplete: ConnectListener)
-        fun openFile(file: SourceFile)
+        fun onFileSelected(file: SourceFile, context: Context?)
+        fun openFile(file: SourceFile, context: Context?)
+        fun getSourceObj(): Source
         fun navigateToBreadcrumb(file: SourceFile)
         fun loadRootFolder(onNext: (files: List<SourceFile>) -> Unit,
                            onError: (error: Throwable) -> Unit,
@@ -72,10 +78,10 @@ class SourceContract {
     }
 
     interface FilePresenter {
-        fun onItemSelected(position: Int)
+        fun onItemSelected(position: Int, context: Context?)
         fun getFileCount(): Int
         fun setCurrentDirectory(fileList: List<SourceFile>)
-        fun bindViewForPoistion(position: Int, fileRowView: FileRowView)
+        fun bindViewForPosition(position: Int, fileRowView: FileRowView)
     }
 }
 

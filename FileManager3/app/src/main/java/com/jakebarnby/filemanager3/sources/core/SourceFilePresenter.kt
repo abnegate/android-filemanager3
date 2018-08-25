@@ -1,5 +1,6 @@
 package com.jakebarnby.filemanager3.sources.core
 
+import android.content.Context
 import com.jakebarnby.filemanager3.sources.models.SourceFile
 
 class SourceFilePresenter(private val fragmentPresenter: SourceContract.FragmentPresenter)
@@ -7,15 +8,15 @@ class SourceFilePresenter(private val fragmentPresenter: SourceContract.Fragment
 
     private val files: MutableList<SourceFile> = mutableListOf()
 
-    override fun onItemSelected(position: Int) {
-        fragmentPresenter.openFile(files[position])
+    override fun onItemSelected(position: Int, context: Context?) {
+        fragmentPresenter.onFileSelected(files[position], context)
     }
 
     override fun getFileCount(): Int {
         return files.size
     }
 
-    override fun bindViewForPoistion(position: Int, fileRowView: SourceContract.FileRowView) {
+    override fun bindViewForPosition(position: Int, fileRowView: SourceContract.FileRowView) {
         val file = files[position]
         file.let {
             fileRowView.setFilename(it.name!!)

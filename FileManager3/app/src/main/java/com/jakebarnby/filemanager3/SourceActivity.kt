@@ -1,9 +1,11 @@
 package com.jakebarnby.filemanager3
 
 import android.os.Bundle
+import com.jakebarnby.filemanager3.sources.core.Fragments
 import com.jakebarnby.filemanager3.sources.core.SourceContract
 import com.jakebarnby.filemanager3.sources.core.SourcePagerAdapter
 import dagger.android.support.DaggerAppCompatActivity
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
@@ -125,5 +127,23 @@ class SourceActivity : DaggerAppCompatActivity(), SourceContract.View {
 
     override fun onQueryTextChange(newText: String?): Boolean {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onBackPressed() {
+        val curFragPresenter = Fragments
+            .values()[view_pager.currentItem]
+            .fragment
+            .fragmentPresenter
+
+        val parentId = curFragPresenter
+            .getSourceObj()
+            .currentFolderParentId
+
+        curFragPresenter.getSourceObj().fileDao
+            .getFileById(parentId)
+            .subscribeOn(Schedulers.io())
+            .subscribe {
+                curFragPresenter.onFileSelected(it, this)
+            }
     }
 }

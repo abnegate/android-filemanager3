@@ -26,5 +26,6 @@ abstract class FileDatabase : RoomDatabase() {
             Room.databaseBuilder(context.applicationContext,
                 FileDatabase::class.java, "filemanager.db")
                 .build()
+
     }
 }
