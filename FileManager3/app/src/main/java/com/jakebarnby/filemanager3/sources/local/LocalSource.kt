@@ -10,6 +10,7 @@ import com.jakebarnby.filemanager3.sources.models.StorageStats
 import com.jakebarnby.filemanager3.util.Constants.Sources.LOCAL
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 import java.io.File
 import java.io.IOException
@@ -52,7 +53,7 @@ class LocalSource : Source(SourceType.LOCAL, LOCAL) {
                     file.listFiles().forEach { queue.offer(it) }
                 }
             }
-            fileDao.insertFiles(fileList)
+            fileDao!!.insertFiles(fileList)
             it.onComplete()
         }, BackpressureStrategy.BUFFER)
     }
@@ -62,32 +63,33 @@ class LocalSource : Source(SourceType.LOCAL, LOCAL) {
             it.onComplete()
         }, BackpressureStrategy.BUFFER)
 
-    override fun getStorageStats(): Flowable<StorageStats> {
-        return Flowable.create({ emitter ->
-            if (storageStats == null) {
-                val stats = StorageStats()
-                disposables.add(
-                    fileDao.getFileById(rootFileId)
-                        .subscribeOn(Schedulers.io())
-                        .subscribe { file ->
-                            try {
-                                val fsStats = StatFs(file.path)
-                                stats.apply {
-                                    freeSpace = fsStats.freeBytes
-                                    totalSpace = fsStats.totalBytes
-                                    usedSpace = totalSpace - freeSpace
-                                }
-                                storageStats = stats
-                                emitter.onNext(stats)
-                                emitter.onComplete()
-                            } catch (e: IOException) {
-                                emitter.onError(e)
-                            }
-                        })
-            } else {
-                emitter.onNext(storageStats!!)
-                emitter.onComplete()
+    override fun getStorageStats(): Single<StorageStats> {
+        return Single.create { emitter ->
+            if (storageStats != null) {
+                emitter.onSuccess(storageStats!!)
+                return@create
             }
-        }, BackpressureStrategy.BUFFER)
+
+            val stats = StorageStats()
+            disposables.add(
+                fileDao!!
+                    .getFileById(rootFileId)
+                    .subscribeOn(Schedulers.io())
+                    .subscribe { file ->
+                        try {
+                            val fsStats = StatFs(file.path)
+                            stats.apply {
+                                freeSpace = fsStats.freeBytes
+                                totalSpace = fsStats.totalBytes
+                                usedSpace = totalSpace - freeSpace
+                            }
+                            storageStats = stats
+                            emitter.onSuccess(stats)
+                        } catch (e: IOException) {
+                            emitter.onError(e)
+                        }
+                    }
+            )
+        }
     }
 }

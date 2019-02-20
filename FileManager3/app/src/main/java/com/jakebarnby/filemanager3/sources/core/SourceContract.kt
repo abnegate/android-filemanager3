@@ -5,12 +5,12 @@ import android.support.v4.view.ViewPager
 import android.support.v7.widget.SearchView
 import com.jakebarnby.filemanager3.core.BasePresenter
 import com.jakebarnby.filemanager3.core.BaseView
-import com.jakebarnby.filemanager3.sources.models.Source
+import com.jakebarnby.filemanager3.data.FileDao
 import com.jakebarnby.filemanager3.sources.models.SourceFile
 
 class SourceContract {
 
-    interface View : BaseView<Presenter>, ViewPager.OnPageChangeListener, SearchView.OnQueryTextListener {
+    interface ActivityView : BaseView<ActivityPresenter>, ViewPager.OnPageChangeListener, SearchView.OnQueryTextListener {
         fun showViewAsDialog()
         fun showCreateFolderDialog()
         fun showCreateZipDialog()
@@ -26,7 +26,7 @@ class SourceContract {
         fun toggleFloatingMenu(enabled: Boolean)
     }
 
-    interface Presenter : BasePresenter<View> {
+    interface ActivityPresenter : BasePresenter<ActivityView> {
         fun checkPermissions()
 
         fun onViewAsClicked()
@@ -53,35 +53,34 @@ class SourceContract {
         fun toggleLoading()
         fun toggleConnectButton()
         fun toggleLogo()
-        fun createBreadcrumb(file: SourceFile): android.view.View
-        fun pushBreadcrumb(crumb: android.view.View)
-        fun popBreadcrumb()
+        fun breadcrumbAdded(position: Int)
+        fun breadcrumbRemoved(position: Int)
     }
 
     interface FragmentPresenter : BasePresenter<FragmentView> {
-
-
+        fun setFileDao(fileDao: FileDao)
         fun connect(onComplete: ConnectListener)
-        fun onFileSelected(file: SourceFile, context: Context?)
-        fun openFile(file: SourceFile, context: Context?)
-        fun getSourceObj(): Source
-        fun navigateToBreadcrumb(file: SourceFile)
         fun loadRootFolder(onNext: (files: List<SourceFile>) -> Unit,
                            onError: (error: Throwable) -> Unit,
                            onComplete: () -> Unit)
+        fun onFileSelected(file: SourceFile, context: Context?)
+        fun openFile(file: SourceFile, context: Context?)
+        fun navigateToBreadcrumb(file: SourceFile)
+        fun breadcrumbAdded(position: Int)
+        fun breadcrumbRemoved(position: Int)
     }
 
-    interface FileRowView {
+    interface FileCollectionView {
         fun setPreviewImage(path: String)
         fun setFilename(name: String)
         fun setSelected(selected: Boolean)
     }
 
-    interface FilePresenter {
+    interface FileCollectionPresenter {
         fun onItemSelected(position: Int, context: Context?)
         fun getFileCount(): Int
         fun setCurrentDirectory(fileList: List<SourceFile>)
-        fun bindViewForPosition(position: Int, fileRowView: FileRowView)
+        fun bindViewForPosition(position: Int, fileCollectionView: FileCollectionView)
     }
 }
 

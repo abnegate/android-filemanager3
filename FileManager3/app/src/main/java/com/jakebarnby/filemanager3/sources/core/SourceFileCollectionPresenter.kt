@@ -3,8 +3,8 @@ package com.jakebarnby.filemanager3.sources.core
 import android.content.Context
 import com.jakebarnby.filemanager3.sources.models.SourceFile
 
-class SourceFilePresenter(private val fragmentPresenter: SourceContract.FragmentPresenter)
-    : SourceContract.FilePresenter {
+class SourceFileCollectionPresenter(private val fragmentPresenter: SourceContract.FragmentPresenter)
+    : SourceContract.FileCollectionPresenter {
 
     private val files: MutableList<SourceFile> = mutableListOf()
 
@@ -16,12 +16,12 @@ class SourceFilePresenter(private val fragmentPresenter: SourceContract.Fragment
         return files.size
     }
 
-    override fun bindViewForPosition(position: Int, fileRowView: SourceContract.FileRowView) {
+    override fun bindViewForPosition(position: Int, fileCollectionView: SourceContract.FileCollectionView) {
         val file = files[position]
         file.let {
-            fileRowView.setFilename(it.name!!)
+            fileCollectionView.setFilename(it.name)
             if (!file.isDirectory && file.isMediaFile) {
-                fileRowView.setPreviewImage(it.thumbnailLink!!)
+                fileCollectionView.setPreviewImage(it.thumbnailLink)
             }
         }
     }

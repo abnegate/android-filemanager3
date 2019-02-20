@@ -1,16 +1,14 @@
 package com.jakebarnby.filemanager3.sources.core
 
-import android.app.Activity
 import com.jakebarnby.filemanager3.di.ActivityScoped
-import com.sembozdemir.permissionskt.askPermissions
 import javax.inject.Inject
 
 @ActivityScoped
-class SourcePresenter @Inject constructor() : SourceContract.Presenter {
+class SourceActivityPresenter @Inject constructor() : SourceContract.ActivityPresenter {
 
-    private var view: SourceContract.View? = null
+    private var view: SourceContract.ActivityView? = null
 
-    override fun subscribe(view: SourceContract.View) {
+    override fun subscribe(view: SourceContract.ActivityView) {
         this.view = view
     }
 
@@ -19,26 +17,7 @@ class SourcePresenter @Inject constructor() : SourceContract.Presenter {
     }
 
     override fun checkPermissions() {
-        (view as Activity)
-            .askPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) {
-                onGranted {
 
-                }
-
-                onDenied {
-
-                }
-
-                onShowRationale {
-                    view?.showErrorDialog()
-                }
-
-                onNeverAskAgain {
-                    view?.showErrorWithActionSnackbar("Never ask again.") {
-                        //TODO: Open settings
-                    }
-                }
-            }
     }
 
     override fun onViewAsClicked() {

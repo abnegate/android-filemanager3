@@ -11,18 +11,21 @@ import android.view.ViewGroup
 import com.jakebarnby.filemanager3.R
 import com.jakebarnby.filemanager3.adapters.FileAdapter
 import com.jakebarnby.filemanager3.adapters.FileListAdapter
-import com.jakebarnby.filemanager3.sources.models.SourceFile
+import com.jakebarnby.filemanager3.data.FileDatabase
+import com.jakebarnby.filemanager3.ui.breadcrumbs.BreadcrumbAdapter
+import com.jakebarnby.filemanager3.ui.breadcrumbs.BreadcrumbContract
 import com.jakebarnby.filemanager3.util.toggleVisibility
 import kotlinx.android.synthetic.main.fragment_source.*
 import kotlinx.android.synthetic.main.fragment_source.view.*
-import kotlinx.android.synthetic.main.view_breadcrumb.view.*
 
 open class SourceFragment : Fragment(), SourceContract.FragmentView {
 
     lateinit var fragmentPresenter: SourceContract.FragmentPresenter
-    lateinit var filePresenter: SourceContract.FilePresenter
+    lateinit var fileCollectionPresenter: SourceContract.FileCollectionPresenter
+    lateinit var breadcrumbPresenter: BreadcrumbContract.Presenter
 
     private lateinit var filesRecycler: RecyclerView
+    private lateinit var breadcrumbRecycler: RecyclerView
     private lateinit var adapter: FileAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -34,6 +37,8 @@ open class SourceFragment : Fragment(), SourceContract.FragmentView {
             }
         }
         filesRecycler = view.findViewById(R.id.recycler_files)
+        breadcrumbRecycler = view.findViewById(R.id.recycler_breadcrumbs)
+        fragmentPresenter.setFileDao(FileDatabase.getInstance(context!!).fileDao())
         return view
     }
 
@@ -48,27 +53,46 @@ open class SourceFragment : Fragment(), SourceContract.FragmentView {
     }
 
     override fun initViews() {
-        adapter = FileListAdapter(filePresenter)
+        adapter = FileListAdapter(fileCollectionPresenter)
+        filesRecycler.adapter = adapter
         filesRecycler.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-        filesRecycler.adapter = adapter
+
+        breadcrumbRecycler.adapter = BreadcrumbAdapter(breadcrumbPresenter)
+        breadcrumbRecycler.layoutManager =
+            LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
     }
 
     override fun showRootFolder() {
-        fragmentPresenter.loadRootFolder(
-            {
-                filePresenter.setCurrentDirectory(it)
-                activity?.runOnUiThread {
-                    when (img_source_logo.visibility) {
-                        View.VISIBLE -> toggleLogo()
-                    }
-                    adapter.notifyDataSetChanged()
+        fragmentPresenter.loadRootFolder({ files ->
+            fileCollectionPresenter.setCurrentDirectory(files)
+            activity?.runOnUiThread {
+                when (img_source_logo.visibility) {
+                    View.VISIBLE -> toggleLogo()
                 }
-            }, {
+                adapter.notifyDataSetChanged()
+            }
+        }, {
             it.printStackTrace()
         }, {
             adapter.notifyDataSetChanged()
         })
+    }
+
+    override fun breadcrumbAdded(position: Int) {
+        activity?.let {
+            it.runOnUiThread {
+                breadcrumbRecycler.adapter?.notifyItemInserted(position)
+            }
+        }
+    }
+
+    override fun breadcrumbRemoved(position: Int) {
+        activity?.let {
+            it.runOnUiThread {
+                breadcrumbRecycler.adapter?.notifyItemRemoved(position)
+            }
+        }
     }
 
     override fun toggleLoading() {
@@ -81,58 +105,6 @@ open class SourceFragment : Fragment(), SourceContract.FragmentView {
 
     override fun toggleLogo() {
         img_source_logo.toggleVisibility()
-    }
-
-    override fun createBreadcrumb(file: SourceFile): View {
-        val crumbLayout = layoutInflater
-            .inflate(R.layout.view_breadcrumb, null, false) as ViewGroup
-
-        crumbLayout.crumb_arrow.visibility = if (file.parentId == 0L)
-            View.GONE
-        else
-            View.VISIBLE
-
-        crumbLayout.crumb_text.text = if (file.parentId == 0L)
-            file.sourceName
-        else
-            file.name
-
-        crumbLayout.setOnClickListener(breadcrumbClickListener(crumbLayout))
-        return crumbLayout
-    }
-
-    override fun pushBreadcrumb(crumb: View) {
-//        breadcrumb_scroll.postDelayed({ breadcrumb_scroll.fullScroll(HorizontalScrollView.FOCUS_RIGHT) },
-//            50L)
-//        breadcrumbs.addView(view)
-//        crumb.startAnimation(AnimationUtils.loadAnimation(context, R.anim.breadcrumb_overshoot_z))
-    }
-
-    override fun popBreadcrumb() {
-        breadcrumbs.removeViewAt(breadcrumbs.childCount - 1)
-    }
-
-    private fun breadcrumbClickListener(crumb: View): View.OnClickListener {
-        return View.OnClickListener {
-            //            val crumbText = it.crumb_text
-//
-//            val diff = breadcrumbs.childCount - 1 - breadcrumbs.indexOfChild(crumb)
-//            for (i in 0 until diff) popBreadcrumb()
-//
-//            val name = crumbText.text.toString()
-//            if (mSource.getCurrentDirectory().getData().getName().equals(name)) return@crumbLayout.setOnClickListener
-//            val selectedParent = TreeNode.searchForParent(mSource.getCurrentDirectory(), name)
-//
-//            val previousPosition = selectedParent.getData().getPositionToRestore()
-//            if (previousPosition != -1) {
-//                (rv.getLayoutManager() as LinearLayoutManager).scrollToPositionWithOffset(previousPosition, 0)
-//            }
-//
-//            (activity as SourceActivity).getSourceManager().setActiveDirectory(selectedParent)
-//            (recycler_files.getAdapter() as FileAdapter).setCurrentDirectory(selectedParent, context)
-//            mSource.setCurrentDirectory(selectedParent)
-//            recycler_files.getAdapter().notifyDataSetChanged()
-        }
     }
 
     override fun showErrorSnackbar(error: String) {

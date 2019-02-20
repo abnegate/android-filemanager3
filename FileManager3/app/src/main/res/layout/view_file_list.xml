@@ -4,8 +4,8 @@
     android:id="@+id/cl_file_list"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginEnd="20dp"
-    android:layout_marginStart="20dp"
+    android:layout_marginEnd="@dimen/list_margin"
+    android:layout_marginStart="@dimen/list_margin"
     android:layout_marginTop="10dp">
 
     <CheckBox
@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:paddingEnd="8dp"
         android:paddingStart="0dp"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

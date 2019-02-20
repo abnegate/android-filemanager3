@@ -4,6 +4,7 @@ import android.content.Context
 import com.jakebarnby.filemanager3.data.FileDao
 import com.jakebarnby.filemanager3.data.FileDatabase
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 
 /**
@@ -12,7 +13,7 @@ import io.reactivex.disposables.CompositeDisposable
 
 abstract class Source(val sourceType: SourceType, val sourceName: String) {
 
-    lateinit var fileDao: FileDao
+    var fileDao: FileDao? = null
 
     var rootFileId: Long = 0L
     var storageStats: StorageStats? = null
@@ -26,14 +27,14 @@ abstract class Source(val sourceType: SourceType, val sourceName: String) {
     abstract fun authenticateSource(context: Context): Flowable<Any>
     abstract fun loadSource(context: Context): Flowable<Any>
     abstract fun logout(context: Context): Flowable<Any>
-    abstract fun getStorageStats(): Flowable<StorageStats>
+    abstract fun getStorageStats(): Single<StorageStats>
 
     fun dispose() {
         disposables.dispose()
     }
 
-    fun setFileSource(context: Context) {
-        fileDao = FileDatabase.getInstance(context).fileDao()
+    fun setFileSource(fileDao: FileDao) {
+        this.fileDao = fileDao
     }
 }
 

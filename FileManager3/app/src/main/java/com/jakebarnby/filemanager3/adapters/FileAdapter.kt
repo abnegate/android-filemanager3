@@ -10,34 +10,33 @@ import com.jakebarnby.filemanager3.R
 import com.jakebarnby.filemanager3.glide.GlideApp
 import com.jakebarnby.filemanager3.sources.core.SourceContract
 
-abstract class FileAdapter(protected val filePresenter: SourceContract.FilePresenter)
+abstract class FileAdapter(protected val fileCollectionPresenter: SourceContract.FileCollectionPresenter)
     : RecyclerView.Adapter<FileAdapter.FileViewHolder>() {
 
     override fun getItemCount(): Int {
-        return filePresenter.getFileCount()
+        return fileCollectionPresenter.getFileCount()
     }
 
     override fun onBindViewHolder(holder: FileViewHolder, position: Int) {
-        filePresenter.bindViewForPosition(position, holder)
+        fileCollectionPresenter.bindViewForPosition(position, holder)
     }
 
-    open class FileViewHolder(view: View?,
-                              protected val filePresenter: SourceContract.FilePresenter) :
-        RecyclerView.ViewHolder(view),
-        SourceContract.FileRowView,
+    class FileViewHolder(
+        view: View,
+        private val fileCollectionPresenter: SourceContract.FileCollectionPresenter
+    ) : RecyclerView.ViewHolder(view),
+        SourceContract.FileCollectionView,
         View.OnClickListener {
 
-        private lateinit var imgPreview: ImageView
-        private lateinit var selectedBox: CheckBox
-        private lateinit var filename: TextView
+        private var imgPreview: ImageView
+        private var selectedBox: CheckBox
+        private var filename: TextView
 
         init {
-            view?.let {
-                it.setOnClickListener(this)
-                imgPreview = it.findViewById(R.id.img_file_preview)
-                selectedBox = it.findViewById(R.id.checkbox)
-                filename = it.findViewById(R.id.txt_item_title)
-            }
+            view.setOnClickListener(this)
+            imgPreview = view.findViewById(R.id.img_file_preview)
+            selectedBox = view.findViewById(R.id.checkbox)
+            filename = view.findViewById(R.id.txt_item_title)
         }
 
         override fun setPreviewImage(path: String) {
@@ -61,7 +60,7 @@ abstract class FileAdapter(protected val filePresenter: SourceContract.FilePrese
         }
 
         override fun onClick(view: View?) {
-            filePresenter.onItemSelected(adapterPosition, view?.context)
+            fileCollectionPresenter.onItemSelected(adapterPosition, view?.context)
         }
     }
 }

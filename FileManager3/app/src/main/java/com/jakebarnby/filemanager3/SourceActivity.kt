@@ -3,49 +3,60 @@ package com.jakebarnby.filemanager3
 import android.os.Bundle
 import com.jakebarnby.filemanager3.sources.core.Fragments
 import com.jakebarnby.filemanager3.sources.core.SourceContract
+import com.jakebarnby.filemanager3.sources.core.SourceFragmentPresenter
 import com.jakebarnby.filemanager3.sources.core.SourcePagerAdapter
+import com.sembozdemir.permissionskt.askPermissions
 import dagger.android.support.DaggerAppCompatActivity
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
 
-class SourceActivity : DaggerAppCompatActivity(), SourceContract.View {
+class SourceActivity : DaggerAppCompatActivity(), SourceContract.ActivityView {
 
     @Inject
-    lateinit var presenter: SourceContract.Presenter
+    lateinit var presenter: SourceContract.ActivityPresenter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         setSupportActionBar(toolbar)
 
-        view_pager.adapter = SourcePagerAdapter(supportFragmentManager)
-        view_pager.offscreenPageLimit = (view_pager.adapter as SourcePagerAdapter).count - 1
+        viewPager.adapter = SourcePagerAdapter(supportFragmentManager)
+        viewPager.offscreenPageLimit = Fragments.values().size - 1
 
-        tabs.setupWithViewPager(view_pager)
+        tabs.setupWithViewPager(viewPager)
+        checkPermissions()
     }
 
     override fun onResume() {
         super.onResume()
         presenter.subscribe(this)
-        presenter.checkPermissions()
     }
 
     override fun onStop() {
-        super.onStop()
         presenter.unsubscribe()
+        super.onStop()
     }
 
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    external fun stringFromJNI(): String
+    private fun checkPermissions() {
+        askPermissions(android.Manifest.permission.WRITE_EXTERNAL_STORAGE) {
+            onGranted {
+                //TODO: Permission granted, load files
+            }
 
-    companion object {
-        // Used to load the 'native-lib' library on application startup.
-        init {
-            System.loadLibrary("native-lib")
+            onDenied {
+                //TODO: Show permissions is required to do anything and request again
+            }
+
+            onShowRationale {
+                showErrorDialog()
+            }
+
+            onNeverAskAgain {
+                showErrorWithActionSnackbar("Never ask again.") {
+                    //TODO: Open settings permissions
+                }
+            }
         }
     }
 
@@ -131,19 +142,22 @@ class SourceActivity : DaggerAppCompatActivity(), SourceContract.View {
 
     override fun onBackPressed() {
         val curFragPresenter = Fragments
-            .values()[view_pager.currentItem]
+            .values()[viewPager.currentItem]
             .fragment
             .fragmentPresenter
 
-        val parentId = curFragPresenter
-            .getSourceObj()
-            .currentFolderParentId
+        val source = (curFragPresenter as SourceFragmentPresenter).source
+        val parentId = source.currentFolderParentId
 
-        curFragPresenter.getSourceObj().fileDao
+        curFragPresenter
+            .breadcrumbPresenter
+            .popBreadcrumb()
+
+        source.disposables.add(source.fileDao!!
             .getFileById(parentId)
             .subscribeOn(Schedulers.io())
             .subscribe {
                 curFragPresenter.onFileSelected(it, this)
-            }
+            })
     }
 }

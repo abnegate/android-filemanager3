@@ -16,4 +16,5 @@
     <dimen name="rdb_padding_bottom">8dp</dimen>
     <dimen name="txt_padding_bottom">10dp</dimen>
     <dimen name="dialog_padding_large">38dp</dimen>
+    <dimen name="list_margin">20dp</dimen>
 </resources>
