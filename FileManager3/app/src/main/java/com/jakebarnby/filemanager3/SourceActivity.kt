@@ -157,7 +157,7 @@ class SourceActivity : DaggerAppCompatActivity(), SourceContract.ActivityView {
             .getFileById(parentId)
             .subscribeOn(Schedulers.io())
             .subscribe {
-                curFragPresenter.onFileSelected(it, this)
+                curFragPresenter.onFileSelected(it, this, false)
             })
     }
 }

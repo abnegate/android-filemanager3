@@ -41,7 +41,7 @@ open class SourceFragmentPresenter : SourceContract.FragmentPresenter {
         }
     }
 
-    override fun connect(onComplete: ConnectListener) {
+    override fun connect(onComplete: () -> Unit) {
         view?.let { view ->
             view.toggleConnectButton()
             view.toggleLoading()
@@ -95,7 +95,11 @@ open class SourceFragmentPresenter : SourceContract.FragmentPresenter {
         )
     }
 
-    override fun onFileSelected(file: SourceFile, context: Context?) {
+    override fun onFileSelected(
+        file: SourceFile,
+        context: Context?,
+        pushBreadcrumb: Boolean
+    ) {
         if (!file.isDirectory) {
             openFile(file, context)
             return
@@ -109,8 +113,6 @@ open class SourceFragmentPresenter : SourceContract.FragmentPresenter {
             .getFolderBySource(file.id, source.sourceName)
             .subscribeOn(Schedulers.io())
             .subscribe({
-                source.currentFolderParentId = file.parentId
-                breadcrumbPresenter.pushBreadcrumb(file)
                 fileConsumer(it)
             }, {
                 it.printStackTrace()

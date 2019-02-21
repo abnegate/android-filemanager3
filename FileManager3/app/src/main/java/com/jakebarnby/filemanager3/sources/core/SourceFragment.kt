@@ -70,7 +70,6 @@ open class SourceFragment : Fragment(), SourceContract.FragmentView {
                 when (img_source_logo.visibility) {
                     View.VISIBLE -> toggleLogo()
                 }
-                adapter.notifyDataSetChanged()
             }
         }, {
             it.printStackTrace()
@@ -80,17 +79,18 @@ open class SourceFragment : Fragment(), SourceContract.FragmentView {
     }
 
     override fun breadcrumbAdded(position: Int) {
+        breadcrumbRecycler.adapter?.notifyItemInserted(position)
         activity?.let {
             it.runOnUiThread {
-                breadcrumbRecycler.adapter?.notifyItemInserted(position)
             }
         }
     }
 
     override fun breadcrumbRemoved(position: Int) {
+        breadcrumbRecycler.adapter?.notifyItemRangeRemoved(position, 1)
         activity?.let {
             it.runOnUiThread {
-                breadcrumbRecycler.adapter?.notifyItemRemoved(position)
+
             }
         }
     }

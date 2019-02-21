@@ -17,8 +17,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:paddingEnd="8dp"
         android:paddingStart="0dp"
+        android:paddingEnd="8dp"
         android:visibility="gone" />
 
     <TextView

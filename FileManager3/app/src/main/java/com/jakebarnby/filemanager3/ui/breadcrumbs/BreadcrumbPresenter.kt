@@ -30,7 +30,7 @@ class BreadcrumbPresenter(private val fragmentPresenter: SourceContract.Fragment
     }
 
     override fun popBreadcrumb() {
-        val position = crumbs.size
+        val position = crumbs.size - 1
         crumbs.pop()
         fragmentPresenter.breadcrumbRemoved(position)
     }

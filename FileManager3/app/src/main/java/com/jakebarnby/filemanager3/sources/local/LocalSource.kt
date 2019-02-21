@@ -24,7 +24,7 @@ class LocalSource : Source(SourceType.LOCAL, LOCAL) {
         }, BackpressureStrategy.BUFFER)
 
     override fun loadSource(context: Context): Flowable<Any> {
-        return Flowable.create({
+        return Flowable.create({ emitter ->
             val root = Environment.getExternalStorageDirectory()
             val queue = LinkedList<File>()
             val fileList = mutableListOf<SourceFile>()
@@ -47,14 +47,16 @@ class LocalSource : Source(SourceType.LOCAL, LOCAL) {
                 }
 
                 fileList.add(sourceFile)
-                it.onNext(sourceFile)
+                emitter.onNext(sourceFile)
 
                 if (file.isDirectory) {
-                    file.listFiles().forEach { queue.offer(it) }
+                    file.listFiles().forEach {
+                        queue.offer(it)
+                    }
                 }
             }
             fileDao!!.insertFiles(fileList)
-            it.onComplete()
+            emitter.onComplete()
         }, BackpressureStrategy.BUFFER)
     }
 

@@ -12,16 +12,14 @@ class LocalFileIdHelper : IdHelper<File> {
         val crc32 = CRC32()
     }
 
-    override fun getId(obj: File): Single<Long> {
-        return Single.create {
-            try {
-                val bytes = obj.getBytes()
-                crc32.reset()
-                crc32.update(bytes)
-                it.onSuccess(crc32.value)
-            } catch (e: IOException) {
-                it.onError(e)
-            }
-        }
+    override fun getId(obj: File): Long {
+        return obj.hashCode().toLong()
+//        try {
+//            crc32.reset()
+//            crc32.update(obj.hashCode())
+//            return crc32.value
+//        } catch (e: IOException) {
+//            e.printStackTrace()
+//        }
     }
 }
